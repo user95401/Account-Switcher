@@ -1,1 +1,1 @@
-xd
+umm... so like, this is the account switcher mod for gd... made by me ^^ it lets u switch between different save profiles so u can have multiple accounts or something... idk if it works perfectly but u can try it out maybe? just add profiles in settings and switch between them... pls dont blame me if something breaks tho >_<
