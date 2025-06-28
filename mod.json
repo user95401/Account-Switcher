@@ -1,0 +1,37 @@
+{
+	"geode": "4.6.1",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"early-load": true,
+
+	"id": "_a.account-switcher",
+	"name": "Account Switcher",
+	"version": "v1.0.0-beta.1",
+	"developer": "user95401",
+
+	"description": "The Account Switcher mod for Geomety Dash. really",
+
+	"links": {
+		"community": "https://discord.gg/6SxAbk3bTA",
+		"homepage": "https://t.me/user95401_channel",
+		"source": "https://github.com/user95401/Account-Switcher"
+	},
+	"tags": [ "interface", "utility" ],
+
+	"settings": {
+		"profile-names": {
+			"type": "custom:profile-names",
+			"name": "Profile list",
+			"default": { "Default": "" }
+		},
+		"selected-profile": {
+      "type": "string",
+      "name": "Selected profile",
+      "default": "Default"
+    }
+  }
+}
