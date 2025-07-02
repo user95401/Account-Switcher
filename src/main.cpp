@@ -1,4 +1,5 @@
 #include <Geode/Geode.hpp>
+#include <Geode/ui/GeodeUI.hpp>
 using namespace geode::prelude;
 
 #include <regex>
@@ -24,7 +25,37 @@ class $modify(GManagerAccountSwitcherExt, GManager) {
 	}
 };
 
-//ya
+//ui
+
+#include <Geode/modify/AccountLayer.hpp>
+class $modify(AccountLayerSwitcherUIExt, AccountLayer) {
+    void setupMenu() {//m_buttonMenu
+        auto menu = m_buttonMenu; if (!menu) return;
+        //create menu item
+        auto gmdsex = CCMenuItemExt::createSpriteExtraWithFrameName(
+            "GJ_sFriendsIcon_001.png", 1.2f, [](CCNode*) {
+                openSettingsPopup(getMod(), "yea disable geode theme, plaese");
+            }
+        );
+        //add item to menu
+        m_buttonMenu->addChild(gmdsex);
+        //setup position at left top corner of list
+        gmdsex->setPosition(//center pos
+            (m_buttonMenu->getContentSize() / 2) //kinda respect menu offset..
+            - (CCSizeMake(1, 1) * m_buttonMenu->getPositionX())
+        );
+        if (auto box = m_listLayer) gmdsex->setPosition(gmdsex->getPosition() +
+            //add to center pos of list dist from center to left top
+            ((box->getContentSize() / 2) - CCSizeMake(24, 24)) //with 24 offset
+        ); 
+        else gmdsex->setPosition(CCPointMake(48, -48)); //oh no list?... simple set so
+    }
+    virtual void customSetup() {
+        AccountLayer::customSetup();
+        setupMenu();
+    };
+};
+
 #include <Geode/loader/SettingV3.hpp>
 
 class BoolSettingNodeV3 : public SettingValueNodeV3<BoolSettingV3> {};
