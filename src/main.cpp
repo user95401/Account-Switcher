@@ -4,6 +4,8 @@ using namespace geode::prelude;
 
 #include <regex>
 
+CCSize operator/(const CCSize& a, const CCSize& b) { return CCSizeMake(b.width != 0 ? a.width / b.width : 0, b.height != 0 ? a.height / b.height : 0); };
+
 auto savePathPrefix(std::string sel = "") {
     sel = sel.size() ? sel : getMod()->getSettingValue<std::string>("selected-profile");
     auto keys = getMod()->getSavedSettingsData()["profile-names"];
@@ -37,22 +39,23 @@ class $modify(AccountLayerSwitcherUIExt, AccountLayer) {
                 openSettingsPopup(getMod(), "yea disable geode theme, plaese");
             }
         );
+        gmdsex->setID("settings-btn"_spr);
         //add item to menu
         m_buttonMenu->addChild(gmdsex);
         //setup position at left top corner of list
         gmdsex->setPosition(//center pos
-            (m_buttonMenu->getContentSize() / 2) //kinda respect menu offset..
-            - (CCSizeMake(1, 1) * m_buttonMenu->getPositionX())
+            (m_buttonMenu->getContentSize() / CCSizeMake(2, -2)) //kinda respect menu offset..
+            - (CCSizeMake(1, -1) * m_buttonMenu->getPositionX())
         );
         if (auto box = m_listLayer) gmdsex->setPosition(gmdsex->getPosition() +
             //add to center pos of list dist from center to left top
-            ((box->getContentSize() / 2) - CCSizeMake(24, 24)) //with 24 offset
+            ((box->getContentSize() / 2) - CCSizeMake(24, 62)) //with offset
         ); 
         else gmdsex->setPosition(CCPointMake(48, -48)); //oh no list?... simple set so
     }
     virtual void customSetup() {
         AccountLayer::customSetup();
-        setupMenu();
+        if (getMod()->getSettingValue<bool>("add-shortcut-in-account-layer")) setupMenu();
     };
 };
 
@@ -87,6 +90,7 @@ public:
             auto oldHeight = content->getContentHeight();
 
             if (auto selected = content->getChildByType<StringSettingNodeV3>(0)) {
+                selected->setZOrder(-2);
                 this->runAction(CCRepeatForever::create(CCSequence::create(CallFuncExt::create(
                     [selected = Ref(selected)]() {
                         auto val = selected->getSetting()->getMod()->getSettingValue<std::string>(
@@ -100,7 +104,8 @@ public:
                 ), nullptr)));
             };
 
-            while (auto item = content->getChildByType<BoolSettingNodeV3>(0)) {
+            //add-shortcut-in-account-layer existing(
+            while (auto item = content->querySelector("profile-item-setting-node"_spr)) {
                 item->removeFromParent();
             }
 
@@ -126,12 +131,15 @@ public:
                 auto setting = BoolSettingV3::parse("dummy", GEODE_MOD_ID, aw);
                 if (setting) {
                     auto node = setting.unwrapOrDefault()->createNode(this->getContentWidth());
-                    content->addChild(node, -1);
+                    node->setID("profile-item-setting-node"_spr);
+                    content->addChild(node, -2);
                     //bg
                     node->setDefaultBGColor(ccc4(0, 0, 0, content->getChildrenCount() % 2 == 0 ? 60 : 20));
                     //deleteBtn
                     auto deleteBtn = node->getButtonMenu()->getChildByType<CCMenuItemToggler>(0);
+                    deleteBtn->setID("profile-item-delete-btn"_spr);
                     auto icon = CCSprite::createWithSpriteFrameName("GJ_deleteIcon_001.png");
+                    icon->setID("profile-item-delete-btn-icon"_spr);
                     limitNodeSize(icon, (deleteBtn->m_onButton->getContentSize() - CCSizeMake(14, 14)), 12.f, .1f);
                     deleteBtn->m_offButton->addChildAtPosition(icon, Anchor::Center, {}, false);
                     deleteBtn->m_onButton->addChildAtPosition(icon, Anchor::Center, {}, false);
@@ -165,6 +173,7 @@ public:
                             __this->getSetting()->getMod()->setSettingValue<std::string>("selected-profile", key);
                         }
                     );
+                    selectBtn->setID("profile-item-select-toggler"_spr);
                     node->runAction(CCRepeatForever::create(CCSequence::create(CallFuncExt::create(
                         [__this = Ref(this), selectBtn = Ref(selectBtn), key]() {
 							auto sel = __this->getSetting()->getMod()->getSettingValue<std::string>("selected-profile");
@@ -178,7 +187,7 @@ public:
             if (auto layout = typeinfo_cast<ColumnLayout*>(content->getLayout())) {
                 layout->setAxisReverse(false);
             };
-            this->setZOrder(999);//to be top always
+            this->setZOrder(-1);
             content->updateLayout();
 
             if (auto scroll = typeinfo_cast<CCScrollLayerExt*>(content->getParent())) {
@@ -187,6 +196,7 @@ public:
         }
         bool init(std::shared_ptr<ProfileItemsSetting> setting, float width) {
             if (!SettingValueNodeV3::init(setting, width)) return false;
+            this->setID("profiles-list-setting-node"_spr);
             this->setContentHeight(18.f);
 
             this->getButtonMenu()->addChildAtPosition(CCMenuItemExt::createSpriteExtraWithFrameName(

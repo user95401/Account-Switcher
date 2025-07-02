@@ -10,7 +10,7 @@
 
 	"id": "_a.account-switcher",
 	"name": "Account Switcher",
-	"version": "v1.0.0-beta.1",
+	"version": "v1.0.0",
 	"developer": "user95401",
 
 	"description": "The Account Switcher mod for Geomety Dash. really",
@@ -23,15 +23,21 @@
 	"tags": [ "interface", "utility" ],
 
 	"settings": {
+		"add-shortcut-in-account-layer": {
+			"type": "bool",
+			"name": "Add shortcut in account layer",
+			"default": true
+		},
 		"profile-names": {
 			"type": "custom:profile-names",
 			"name": "Profile list",
 			"default": { "Default": "" }
 		},
 		"selected-profile": {
-      "type": "string",
-      "name": "Selected profile",
-      "default": "Default"
-    }
-  }
+			"type": "string",
+			"name": "Selected profile:",
+			"requires-restart": true,
+			"default": "Default"
+		}
+	}
 }
